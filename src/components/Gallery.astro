@@ -1,0 +1,42 @@
+---
+import SectionHeading from './SectionHeading.astro';
+
+interface GalleryItem {
+  label: string;
+  image?: string;
+  alt: string;
+  className?: string;
+}
+
+interface Props {
+  items: GalleryItem[];
+}
+
+const { items } = Astro.props;
+---
+
+<section class="section gallery-section" aria-labelledby="gallery-title">
+  <div class="container">
+    <SectionHeading
+      id="gallery-title"
+      eyebrow="Momentos especiales"
+      title="Mi historia en imágenes"
+      description="Un espacio para guardar los recuerdos que me acompañaron hasta este día."
+    />
+    <div class="gallery-grid">
+      {items.map((item, index) => (
+        <div class:list={['gallery-card', item.className]}>
+          {item.image ? (
+            <img src={item.image} alt={item.alt} loading="lazy" />
+          ) : (
+            <>
+              <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M8 10h32v28H8z"/><circle cx="18" cy="20" r="4"/><path d="m10 35 10-9 7 6 5-4 6 7"/></svg>
+              <span>{item.label}</span>
+              <small>Espacio para fotografía {index + 1}</small>
+            </>
+          )}
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

@@ -1,17 +1,38 @@
 ---
-
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Countdown from '../components/Countdown.astro';
+import DressCode from '../components/DressCode.astro';
+import EventDetails from '../components/EventDetails.astro';
+import Gallery from '../components/Gallery.astro';
+import Gifts from '../components/Gifts.astro';
+import Hero from '../components/Hero.astro';
+import Rsvp from '../components/Rsvp.astro';
+import { countdown, galleryItems, invitation } from '../data/invitation';
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<BaseLayout
+  title={`Mis XV años | ${invitation.celebrant}`}
+  description={`Invitación a los XV años de ${invitation.celebrant}. ${invitation.date}.`}
+>
+  <main>
+    <Hero name={invitation.celebrant} date={invitation.date} />
+    <div id="invitacion">
+      <Countdown items={countdown} />
+      <EventDetails
+        date={invitation.date}
+        time={invitation.time}
+        venue={invitation.venue}
+        address={invitation.address}
+        mapsUrl={invitation.mapsUrl}
+      />
+      <DressCode dressCode={invitation.dressCode} note={invitation.dressCodeNote} />
+      <Gallery items={galleryItems} />
+      <Gifts
+        note={invitation.giftNote}
+        bankDetails={invitation.bankDetails}
+        qrImage={invitation.qrImage}
+      />
+      <Rsvp name={invitation.shortName} rsvpUrl={invitation.rsvpUrl} />
+    </div>
+  </main>
+</BaseLayout>

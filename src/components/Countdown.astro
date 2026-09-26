@@ -1,0 +1,28 @@
+---
+interface CountdownItem {
+  value: string;
+  label: string;
+}
+
+interface Props {
+  items: CountdownItem[];
+}
+
+const { items } = Astro.props;
+---
+
+<section class="section countdown-section" aria-labelledby="countdown-title">
+  <div class="container container--narrow">
+    <p class="eyebrow">Falta muy poco</p>
+    <h2 id="countdown-title" class="sr-only">Cuenta regresiva para la celebración</h2>
+    <div class="countdown" aria-label="Cuenta regresiva de ejemplo">
+      {items.map((item) => (
+        <div class="countdown-item">
+          <strong>{item.value}</strong>
+          <span>{item.label}</span>
+        </div>
+      ))}
+    </div>
+    <p class="countdown-note">Cada momento nos acerca a una noche mágica</p>
+  </div>
+</section>

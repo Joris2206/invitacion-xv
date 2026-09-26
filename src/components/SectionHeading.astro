@@ -1,0 +1,18 @@
+---
+interface Props {
+  id?: string;
+  eyebrow?: string;
+  title: string;
+  description?: string;
+  light?: boolean;
+}
+
+const { id, eyebrow, title, description, light = false } = Astro.props;
+---
+
+<header class:list={['section-heading', { 'section-heading--light': light }]}>
+  {eyebrow && <p class="eyebrow">{eyebrow}</p>}
+  <h2 id={id}>{title}</h2>
+  <span class="title-flourish" aria-hidden="true"><i></i></span>
+  {description && <p class="section-description">{description}</p>}
+</header>

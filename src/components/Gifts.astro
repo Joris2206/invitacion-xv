@@ -1,0 +1,38 @@
+---
+import SectionHeading from './SectionHeading.astro';
+
+interface Props {
+  note: string;
+  bankDetails: string;
+  qrImage?: string;
+}
+
+const { note, bankDetails, qrImage } = Astro.props;
+---
+
+<section class="section gifts-section" aria-labelledby="gifts-title">
+  <div class="container container--narrow gifts-content">
+    <div class="gift-icon" aria-hidden="true">
+      <svg viewBox="0 0 64 64"><path d="M9 27h46v29H9zM6 18h52v10H6zM32 18v38"/><path d="M31 18c-9 0-15-3-15-8 0-3 3-5 6-5 6 0 9 8 9 13ZM33 18c9 0 15-3 15-8 0-3-3-5-6-5-6 0-9 8-9 13Z"/></svg>
+    </div>
+    <SectionHeading id="gifts-title" eyebrow="Con cariño" title="Regalos" />
+    <p>{note}</p>
+    <div class="gift-options">
+      <div class="qr-placeholder" aria-label="Espacio reservado para código QR">
+        {qrImage ? (
+          <img src={qrImage} alt="Código QR para información de regalos" loading="lazy" />
+        ) : (
+          <>
+            <span>QR</span>
+            <small>Espacio para código</small>
+          </>
+        )}
+      </div>
+      <div class="bank-placeholder">
+        <p class="detail-label">Transferencia</p>
+        <strong>{bankDetails}</strong>
+        <small>Reemplaza este texto con banco, cuenta y titular.</small>
+      </div>
+    </div>
+  </div>
+</section>

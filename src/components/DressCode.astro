@@ -1,0 +1,21 @@
+---
+import SectionHeading from './SectionHeading.astro';
+
+interface Props {
+  dressCode: string;
+  note: string;
+}
+
+const { dressCode, note } = Astro.props;
+---
+
+<section class="section dress-section" aria-labelledby="dress-title">
+  <div class="container container--narrow dress-content">
+    <div class="dress-illustration" aria-hidden="true">
+      <svg viewBox="0 0 120 140"><path d="M60 15c-8 0-15 7-15 16 0 7 4 12 9 15l-8 18-24 54c12 5 24 7 38 7s26-2 38-7L74 64l-8-18c5-3 9-8 9-15 0-9-7-16-15-16Z"/><path d="M45 34c8 5 22 5 30 0M43 69h34M31 101c18 6 40 6 58 0"/></svg>
+    </div>
+    <SectionHeading id="dress-title" eyebrow="Para lucir increíble" title="Código de vestimenta" />
+    <p class="dress-code">{dressCode}</p>
+    <p class="dress-note">{note}</p>
+  </div>
+</section>

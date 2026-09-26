@@ -1,0 +1,20 @@
+---
+interface Props {
+  name: string;
+  rsvpUrl: string;
+}
+
+const { name, rsvpUrl } = Astro.props;
+---
+
+<section class="rsvp-section" aria-labelledby="rsvp-title">
+  <div class="rsvp-decoration rsvp-decoration--left" aria-hidden="true"></div>
+  <div class="rsvp-decoration rsvp-decoration--right" aria-hidden="true"></div>
+  <div class="container container--narrow rsvp-content">
+    <p class="eyebrow">Espero celebrar contigo</p>
+    <h2 id="rsvp-title">¿Me acompañas?</h2>
+    <p>Tu presencia hará que esta noche sea aún más especial. Por favor, confirma tu asistencia.</p>
+    <a class="button button--light" href={rsvpUrl}>Confirmar asistencia</a>
+    <p class="rsvp-name">Con cariño, <span>{name}</span></p>
+  </div>
+</section>

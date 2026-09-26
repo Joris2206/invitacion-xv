@@ -1,0 +1,28 @@
+---
+interface Props {
+  name: string;
+  date: string;
+}
+
+const { name, date } = Astro.props;
+---
+
+<section class="hero" aria-labelledby="hero-title">
+  <div class="hero-glow hero-glow--one" aria-hidden="true"></div>
+  <div class="hero-glow hero-glow--two" aria-hidden="true"></div>
+  <div class="hero-frame" aria-hidden="true"></div>
+
+  <div class="hero-content">
+    <p class="hero-kicker">Mis quince años</p>
+    <p class="hero-intro">Con mucha ilusión, quiero compartir contigo este día inolvidable</p>
+    <h1 id="hero-title">{name}</h1>
+    <div class="hero-divider" aria-hidden="true"><span>XV</span></div>
+    <p class="hero-date">{date}</p>
+    <a class="button button--primary" href="#invitacion">Ver invitación</a>
+  </div>
+
+  <a class="scroll-cue" href="#invitacion" aria-label="Ir al contenido de la invitación">
+    <span>Descubre</span>
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
+  </a>
+</section>
