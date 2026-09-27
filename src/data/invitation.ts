@@ -2,7 +2,9 @@ export const invitation = {
   celebrant: 'Angie Lucía Mora Loaisiga',
   shortName: 'Angie',
   date: 'Sábado, 28 de noviembre de 2026',
-  time: '7:00 p. m.',
+  time: '8:00 p. m.',
+  // Hora de Nicaragua (America/Managua, UTC-06:00).
+  startsAt: '2026-11-28T20:00:00-06:00',
   venue: 'Salón y Eventos El Rancho',
   address: 'Villa Fontana, Colegio Nórdico 300 mts. al Sur, punta plancha M/D',
   mapsUrl:
@@ -15,13 +17,6 @@ export const invitation = {
   qrImage: '',
   rsvpUrl: '#',
 };
-
-export const countdown = [
-  { value: '124', label: 'Días' },
-  { value: '08', label: 'Horas' },
-  { value: '32', label: 'Minutos' },
-  { value: '16', label: 'Segundos' },
-];
 
 export const galleryItems = [
   { label: 'Recuerdo 01', image: '', alt: 'Retrato de Angie', className: 'gallery-card--tall' },

@@ -1,28 +1,54 @@
 ---
-interface CountdownItem {
-  value: string;
-  label: string;
-}
-
 interface Props {
-  items: CountdownItem[];
+  startsAt: string;
 }
 
-const { items } = Astro.props;
+const { startsAt } = Astro.props;
+const labels = ['Días', 'Horas', 'Minutos', 'Segundos'];
 ---
 
 <section class="section countdown-section" aria-labelledby="countdown-title">
   <div class="container container--narrow">
     <p class="eyebrow">Falta muy poco</p>
     <h2 id="countdown-title" class="sr-only">Cuenta regresiva para la celebración</h2>
-    <div class="countdown" aria-label="Cuenta regresiva de ejemplo">
-      {items.map((item) => (
+    <div class="countdown" data-countdown data-starts-at={startsAt} role="timer" aria-label="Cuenta regresiva para la celebración">
+      {labels.map((label) => (
         <div class="countdown-item">
-          <strong>{item.value}</strong>
-          <span>{item.label}</span>
+          <strong data-countdown-value>--</strong>
+          <span>{label}</span>
         </div>
       ))}
     </div>
     <p class="countdown-note">Cada momento nos acerca a una noche mágica</p>
   </div>
 </section>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-countdown]').forEach((countdown) => {
+    const target = Date.parse(countdown.dataset.startsAt ?? '');
+    if (!Number.isFinite(target)) return;
+
+    const values = countdown.querySelectorAll<HTMLElement>('[data-countdown-value]');
+    let interval: ReturnType<typeof setInterval> | undefined;
+
+    function update() {
+      // Comparar instantes absolutos mantiene la hora del evento en cualquier país.
+      const seconds = Math.max(0, Math.ceil((target - Date.now()) / 1000));
+      const remaining = [
+        Math.floor(seconds / 86400),
+        Math.floor((seconds % 86400) / 3600),
+        Math.floor((seconds % 3600) / 60),
+        seconds % 60,
+      ];
+
+      values.forEach((element, index) => {
+        element.textContent = String(remaining[index]).padStart(2, '0');
+      });
+
+      if (seconds === 0 && interval !== undefined) clearInterval(interval);
+      return seconds;
+    }
+
+    if (update() > 0) interval = setInterval(update, 1000);
+  });
+</script>

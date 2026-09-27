@@ -7,7 +7,7 @@ import Gallery from '../components/Gallery.astro';
 import Gifts from '../components/Gifts.astro';
 import Hero from '../components/Hero.astro';
 import Rsvp from '../components/Rsvp.astro';
-import { countdown, galleryItems, invitation } from '../data/invitation';
+import { galleryItems, invitation } from '../data/invitation';
 ---
 
 <BaseLayout
@@ -17,7 +17,7 @@ import { countdown, galleryItems, invitation } from '../data/invitation';
   <main>
     <Hero name={invitation.celebrant} date={invitation.date} />
     <div id="invitacion">
-      <Countdown items={countdown} />
+      <Countdown startsAt={invitation.startsAt} />
       <EventDetails
         date={invitation.date}
         time={invitation.time}
