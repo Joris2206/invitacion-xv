@@ -1,0 +1,74 @@
+/* Animation-only layer. Palette values and layout stay in global.css. */
+/* Typed colors interpolate the existing gradients without crossfading content. */
+@property --motion-surface { syntax: '<color>'; inherits: true; initial-value: #fffdfb; }
+@property --motion-hero { syntax: '<color>'; inherits: true; initial-value: #f9ebe6; }
+@property --motion-tint { syntax: '<color>'; inherits: true; initial-value: #f7e9e7; }
+@property --motion-glaze { syntax: '<color>'; inherits: true; initial-value: white; }
+:root {
+  --motion-surface: rgba(var(--surface-rgb), 0.88);
+  --motion-hero: rgba(var(--hero-rgb), 0.93);
+  --motion-tint: rgba(var(--tint-rgb), 0.7);
+  --motion-glaze: rgba(var(--gallery-glaze), 0.45);
+}
+.hero { background: var(--hero-texture), linear-gradient(var(--motion-surface), var(--motion-hero)), radial-gradient(circle at center, var(--white), var(--rose-100)); }
+.gallery-card { background: linear-gradient(135deg, var(--motion-glaze), var(--motion-tint)), var(--champagne-light); }
+.gallery-card { overflow: hidden; }
+.gallery-card:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+.hero-glow { pointer-events: none; }
+/* Reuse the two existing clipped decorations, without adding markup. */
+:root[data-theme="oceano-turquesa"] .hero-glow { border: 1px solid var(--gold-light); background: transparent; filter: none; border-radius: 45%; }
+:root[data-theme="jardin-botanico"] .hero-glow { border-radius: 0 80% 0 80%; }
+:root[data-theme="amatista-nocturna"] .hero-glow { background: radial-gradient(ellipse, rgba(var(--illustration-rgb), 0.3), transparent 70%); }
+
+@media (prefers-reduced-motion: no-preference) {
+  :root { transition: --motion-surface 380ms ease, --motion-hero 380ms ease, --motion-tint 380ms ease, --motion-glaze 380ms ease; }
+  .hero-kicker { animation: hero-arrive 560ms ease-out backwards; }
+  .hero h1 { animation: hero-arrive 560ms 120ms ease-out backwards; }
+  .hero-date { animation: hero-arrive 560ms 240ms ease-out backwards; }
+  .hero .button { animation: hero-arrive 560ms 360ms ease-out backwards; }
+  .hero .button:focus-visible { animation: none; }
+  body, section, h1, h2, h3, p, span, strong, small, a, button,
+  .detail-card, .gallery-card, .icon-badge, .qr-placeholder, .bank-placeholder,
+  .hero-frame, .hero-glow, .theme-menu, .title-flourish i,
+  .hero::before, .hero::after, .hero-frame::before, .hero-frame::after,
+  .title-flourish::before, .title-flourish::after {
+    transition: color 380ms ease, background-color 380ms ease, border-color 380ms ease,
+      box-shadow 380ms ease, transform 220ms ease, filter 220ms ease;
+  }
+  svg { transition: fill 380ms ease, stroke 380ms ease; }
+  .button:hover, .button:focus-visible {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 22px rgba(var(--primary-rgb), 0.24), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+    filter: brightness(1.04);
+  }
+  .gallery-card img { transition: transform 600ms ease; }
+  .gallery-card:focus-within img { transform: scale(1.025); }
+  /* hidden still removes the menu from keyboard and AT immediately. */
+  .theme-menu {
+    opacity: 1; transform: translateY(0);
+    transition: opacity 150ms ease, transform 150ms ease, display 150ms allow-discrete,
+      background-color 380ms ease, border-color 380ms ease;
+  }
+  .theme-menu[hidden] { opacity: 0; transform: translateY(-4px); }
+  @starting-style { .theme-menu:not([hidden]) { opacity: 0; transform: translateY(-4px); } }
+  .hero-glow--one { animation: background-breathe 18s ease-in-out infinite alternate; }
+  .hero-glow--two { animation: background-breathe 22s -8s ease-in-out infinite alternate-reverse; }
+  :root[data-theme="slytherin-magico"] .magic-spark { animation-duration: 12s; }
+  :root[data-theme="slytherin-magico"] .wand-tip { filter: drop-shadow(0 0 6px #49a078); }
+  @media (hover: hover) and (pointer: fine) {
+    .detail-card:hover { transform: translateY(-3px); box-shadow: 0 10px 24px rgba(var(--primary-rgb), 0.12); }
+    .gallery-card:hover img { transform: scale(1.025); }
+  }
+  @media (max-width: 41.99rem) {
+    .hero-glow--two { animation: none; }
+    .hero-glow--one { animation-name: background-breathe-mobile; animation-duration: 24s; }
+    .magic-spark--three, .magic-spark--four { display: none; }
+  }
+}
+@keyframes hero-arrive { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes background-breathe { from { opacity: 0.35; transform: translateY(0) scale(1); } to { opacity: 0.6; transform: translateY(6px) scale(1.035); } }
+@keyframes background-breathe-mobile { from { opacity: 0.4; } to { opacity: 0.5; } }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+  .button:hover, .button:focus-visible, .detail-card:hover, .gallery-card img { transform: none; }
+}

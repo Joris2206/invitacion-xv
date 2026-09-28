@@ -1,0 +1,85 @@
+---
+import { themes } from '../data/themes';
+---
+
+<div class="theme-picker" hidden>
+  <button type="button" class="theme-toggle" aria-expanded="false" aria-controls="theme-menu" aria-haspopup="menu">
+    Paleta: <span data-theme-name>Rosa viejo</span><span aria-hidden="true"> ▾</span>
+  </button>
+  <div id="theme-menu" class="theme-menu" role="menu" aria-label="Paleta de color" hidden>
+    {themes.map((theme) => (
+      <button type="button" role="menuitemradio" aria-checked={theme.id === 'rosa-viejo' ? 'true' : 'false'} tabindex="-1" data-theme-option={theme.id}>
+        <span class="theme-swatches" aria-hidden="true">
+          {theme.colors.map((color) => <i style={{ backgroundColor: color }} />)}
+        </span>
+        <span>{theme.name}</span>
+        <span class="theme-check" aria-hidden="true">✓</span>
+      </button>
+    ))}
+  </div>
+</div>
+
+<script>
+  import { themes, themeStorageKey } from '../data/themes';
+
+  const picker = document.querySelector<HTMLElement>('.theme-picker')!;
+  const toggle = picker.querySelector<HTMLButtonElement>('.theme-toggle')!;
+  const menu = picker.querySelector<HTMLElement>('[role="menu"]')!;
+  const options = Array.from(menu.querySelectorAll<HTMLButtonElement>('[data-theme-option]'));
+  const label = picker.querySelector<HTMLElement>('[data-theme-name]')!;
+
+  function applyTheme(id: string) {
+    const theme = themes.find((item) => item.id === id) ?? themes[0];
+    document.documentElement.dataset.theme = theme.id;
+    label.textContent = theme.name;
+    options.forEach((option) => option.setAttribute('aria-checked', String(option.dataset.themeOption === theme.id)));
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', getComputedStyle(document.documentElement).getPropertyValue('--rose-500').trim());
+  }
+
+  function close(returnFocus = false) {
+    menu.hidden = true;
+    toggle.setAttribute('aria-expanded', 'false');
+    if (returnFocus) toggle.focus();
+  }
+
+  function open(last = false) {
+    menu.hidden = false;
+    toggle.setAttribute('aria-expanded', 'true');
+    (last ? options[options.length - 1] : options.find((option) => option.getAttribute('aria-checked') === 'true') ?? options[0]).focus();
+  }
+
+  applyTheme(document.documentElement.dataset.theme ?? 'rosa-viejo');
+  picker.hidden = false;
+  toggle.addEventListener('click', () => menu.hidden ? open() : close());
+  toggle.addEventListener('keydown', (event) => {
+    if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+      event.preventDefault();
+      open(event.key === 'ArrowUp');
+    }
+  });
+  options.forEach((option) => option.addEventListener('click', () => {
+    const id = option.dataset.themeOption!;
+    applyTheme(id);
+    try { localStorage.setItem(themeStorageKey, id); } catch { /* Sigue funcionando si el almacenamiento está bloqueado. */ }
+    close(true);
+  }));
+  menu.addEventListener('keydown', (event) => {
+    const index = options.indexOf(document.activeElement as HTMLButtonElement);
+    let next: number | undefined;
+    if (event.key === 'ArrowDown') next = (index + 1) % options.length;
+    if (event.key === 'ArrowUp') next = (index - 1 + options.length) % options.length;
+    if (event.key === 'Home') next = 0;
+    if (event.key === 'End') next = options.length - 1;
+    if (next !== undefined) { event.preventDefault(); options[next].focus(); }
+    if (event.key === 'Tab') close();
+  });
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && !menu.hidden) { event.preventDefault(); close(true); }
+  });
+  document.addEventListener('click', (event) => {
+    if (!picker.contains(event.target as Node)) close();
+  });
+  picker.addEventListener('focusout', (event) => {
+    if (!picker.contains(event.relatedTarget as Node | null)) close();
+  });
+</script>

@@ -1,5 +1,9 @@
 ---
 import '../styles/global.css';
+import '../styles/motion.css';
+import ThemePicker from '../components/ThemePicker.astro';
+import MagicIntro from '../components/MagicIntro.astro';
+import { themes, themeStorageKey } from '../data/themes';
 
 interface Props {
   title: string;
@@ -10,18 +14,29 @@ const { title, description } = Astro.props;
 ---
 
 <!doctype html>
-<html lang="es">
+<html lang="es" data-theme="rosa-viejo">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
     <meta name="theme-color" content="#a96670" />
+    <script is:inline define:vars={{ themeIds: themes.map((theme) => theme.id), themeStorageKey }}>
+      try {
+        const savedTheme = localStorage.getItem(themeStorageKey);
+        if (themeIds.includes(savedTheme)) document.documentElement.dataset.theme = savedTheme;
+      } catch { /* La paleta original funciona sin almacenamiento. */ }
+    </script>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" href="/favicon.ico" />
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
   </head>
   <body>
+    <ThemePicker />
     <slot />
+    <MagicIntro />
+    <script>
+      import '../scripts/motion';
+    </script>
   </body>
 </html>
