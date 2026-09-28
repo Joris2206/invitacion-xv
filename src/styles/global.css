@@ -215,6 +215,8 @@
 .theme-swatches i:last-child { border-radius: 0 50% 50% 0; }
 .theme-check { margin-left: auto; visibility: hidden; }
 [aria-checked="true"] .theme-check { visibility: visible; }
+.theme-menu .theme-replay { margin-top: 0.35rem; border-top: 1px solid var(--rose-200); border-radius: 0 0 0.4rem 0.4rem; color: var(--muted); }
+.theme-replay-icon { display: grid; flex: 0 0 1.85rem; place-items: center; color: var(--gold); font-size: 1rem; }
 /* Refuerza el foco sobre fondos claros sin cambiar el estilo inicial. */
 :root:not([data-theme="rosa-viejo"]) .button--primary:focus-visible,
 :root:not([data-theme="rosa-viejo"]) .text-link:focus-visible,

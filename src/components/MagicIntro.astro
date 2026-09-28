@@ -1,206 +1,714 @@
 ---
-// Original vector scene. No remote assets or client framework required.
+const particles = Array.from({ length: 26 }, (_, index) => ({
+  id: index,
+  x: 8 + ((index * 37) % 84),
+  y: 24 + ((index * 19) % 62),
+  size: 2 + (index % 4) * 1.2,
+  delay: (index % 9) * 0.13,
+  duration: 2.8 + (index % 5) * 0.38,
+  drift: -18 + ((index * 13) % 37),
+}));
 ---
-<dialog class="magic-intro" aria-label="Introducción de bosque mágico" aria-modal="true">
-  <button class="intro-skip" type="button" autofocus>Saltar introducción</button>
-  <svg class="intro-scene" viewBox="0 0 1000 700" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
-    <defs>
-      <radialGradient id="intro-night" cx="55%" cy="38%" r="75%"><stop stop-color="#183b38"/><stop offset=".55" stop-color="#0a231e"/><stop offset="1" stop-color="#020b09"/></radialGradient>
-      <radialGradient id="intro-aura"><stop stop-color="#dcefe8" stop-opacity=".35"/><stop offset=".35" stop-color="#49a078" stop-opacity=".18"/><stop offset="1" stop-color="#49a078" stop-opacity="0"/></radialGradient>
-      <radialGradient id="intro-moon"><stop stop-color="#e0e9e7" stop-opacity=".5"/><stop offset=".45" stop-color="#c3ccd1" stop-opacity=".16"/><stop offset="1" stop-color="#c3ccd1" stop-opacity="0"/></radialGradient>
-      <linearGradient id="intro-silver" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f0fffa"/><stop offset=".5" stop-color="#bcded3"/><stop offset="1" stop-color="#49a078" stop-opacity=".6"/></linearGradient>
-      <linearGradient id="intro-spirit" x1="0" y1="0" x2="0.7" y2="1"><stop stop-color="#e5faf2" stop-opacity=".42"/><stop offset=".55" stop-color="#97d0bd" stop-opacity=".14"/><stop offset="1" stop-color="#49a078" stop-opacity=".04"/></linearGradient>
-      <radialGradient id="intro-mist"><stop stop-color="#bddad1" stop-opacity=".16"/><stop offset="1" stop-color="#c3ccd1" stop-opacity="0"/></radialGradient>
-      <radialGradient id="intro-ground"><stop stop-color="#91cbb8" stop-opacity=".18"/><stop offset="1" stop-color="#49a078" stop-opacity="0"/></radialGradient>
-      <filter id="intro-halo" x="-25%" y="-20%" width="150%" height="140%"><feGaussianBlur in="SourceGraphic" stdDeviation="2.5"/><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-      <filter id="intro-soft"><feGaussianBlur stdDeviation="3"/></filter>
-      <!-- Irregular branches, not repeated triangular icons. -->
-      <path id="intro-pine" d="M0 0C-3 20-10 29-19 38L-7 34C-13 47-23 59-33 65L-14 61C-21 79-36 92-48 98L-23 93C-30 108-43 119-59 125L-29 123-7 117-5 156H5L6 116 30 126 57 130C40 115 30 106 23 93L48 100C32 83 25 72 17 58L33 65C18 49 12 37 8 29L19 34C8 19 4 9 0 0Z"/>
-    </defs>
-    <rect width="1000" height="700" fill="url(#intro-night)"/>
-    <g class="intro-sky">
-      <circle cx="568" cy="160" r="92" fill="url(#intro-moon)"/>
-      <circle cx="568" cy="160" r="25" fill="#c3ccd1" opacity=".19"/>
-      <g fill="#cfdfdf" opacity=".3"><circle cx="395" cy="96" r="1"/><circle cx="675" cy="120" r=".8"/><circle cx="463" cy="180" r=".7"/><circle cx="745" cy="64" r="1"/><circle cx="310" cy="144" r=".8"/></g>
-      <g class="intro-cloud" fill="url(#intro-mist)"><ellipse cx="565" cy="176" rx="160" ry="27"/><ellipse cx="472" cy="131" rx="150" ry="19"/></g>
-    </g>
-    <g class="intro-far" fill="#31504d" opacity=".38">
-      <use href="#intro-pine" transform="translate(190 190) scale(1.65)"/><use href="#intro-pine" transform="translate(345 230) scale(1.5)"/>
-      <use href="#intro-pine" transform="translate(437 265) scale(1.1)"/><use href="#intro-pine" transform="translate(626 210) scale(1.65)"/>
-      <use href="#intro-pine" transform="translate(745 175) scale(1.9)"/><use class="intro-extra" href="#intro-pine" transform="translate(870 220) scale(1.7)"/>
-    </g>
-    <ellipse class="intro-mist intro-mist--back" cx="500" cy="403" rx="490" ry="76" fill="url(#intro-mist)"/>
-    <g class="intro-middle" fill="#091f19">
-      <use href="#intro-pine" transform="translate(135 60) scale(3.1)"/><use href="#intro-pine" transform="translate(305 155) scale(2.2)" opacity=".85"/>
-      <use href="#intro-pine" transform="translate(702 115) scale(2.55)" opacity=".8"/><use href="#intro-pine" transform="translate(885 25) scale(3.4)"/>
-    </g>
-    <path d="M0 520Q180 476 405 495T1000 492V700H0Z" fill="#04130e"/>
-    <ellipse class="intro-ground" cx="496" cy="514" rx="130" ry="19" fill="url(#intro-ground)"/>
-    <g class="intro-light" fill="url(#intro-aura)">
-      <ellipse cx="508" cy="397" rx="188" ry="182"/>
-      <path d="M530 282 348 533Q491 571 650 521Z" opacity=".32"/>
-    </g>
-    <g class="intro-travel">
-      <g class="intro-deer" fill="url(#intro-spirit)" stroke="url(#intro-silver)" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round">
-        <!-- Far limbs sit behind the torso; tapered contours retain joint anatomy. -->
-        <path class="deer-leg deer-leg--rear-far" d="M442 402C451 420 456 432 449 445L441 465 451 501 446 505 436 466C432 458 435 448 440 437L430 416Z" opacity=".42"/>
-        <path class="deer-leg deer-leg--front-far" d="M504 399C510 417 510 438 519 448L529 459 526 499 520 502 522 461C509 452 501 440 499 428L495 409Z" opacity=".45"/>
-        <!-- Spine, haunch and ribcage flow continuously into the breast. -->
-        <path class="deer-body" d="M418 400C414 387 421 375 438 371C456 367 476 376 492 373C508 369 515 367 523 378C534 391 529 409 517 418C504 425 487 420 475 416C462 413 451 421 435 416C425 413 421 407 418 400Z"/>
-        <path d="M421 385C413 383 407 379 404 374C406 384 411 391 419 393"/>
-        <path class="deer-leg deer-leg--rear" d="M434 402C439 410 442 418 434 432L422 450C419 460 425 477 423 499L418 505 412 505 418 496 414 456C412 446 419 435 422 426L419 410Z"/>
-        <path class="deer-leg deer-leg--front" d="M513 404C520 412 518 431 516 448L509 497 513 503 504 505 502 500 507 448C504 434 501 422 501 413Z"/>
-        <g class="deer-neck">
-          <path d="M492 382C509 368 514 346 520 326C525 311 534 304 544 306L558 312C562 317 574 319 578 325Q576 331 566 331L552 328C544 336 548 354 543 373C540 391 533 405 520 415C515 401 506 391 492 382Z"/>
-          <path d="M535 309C526 306 521 298 522 291C532 294 537 300 539 307M547 309C549 299 557 292 564 291C562 302 556 308 551 313"/>
-          <path d="M543 329Q528 358 530 389M526 342Q520 371 513 380" fill="none" opacity=".4"/>
-          <circle cx="559" cy="318" r="1.4" fill="#effff8" stroke="none"/>
-          <path d="m570 324 5 1" stroke-width="1"/>
-          <g class="deer-antlers" fill="none" stroke-width="1.6">
-            <path d="M539 306C535 293 526 279 521 265S518 239 512 226M522 268Q507 265 499 251L491 237M517 251Q526 242 526 230L523 219M505 259Q496 260 487 252M517 239 504 231 500 220"/>
-            <path d="M546 305C549 288 557 276 564 263S576 242 573 226M557 276Q551 263 553 249L550 239M567 257Q581 257 590 244L594 232M575 241Q586 235 585 223M554 261 543 252 541 242"/>
-          </g>
-        </g>
-        <!-- Sparse interior light describes ribs and shoulder, not a solid fill. -->
-        <path d="M433 383Q465 378 491 390M448 409Q478 403 493 410M511 382Q523 393 518 404" fill="none" opacity=".3"/>
-      </g>
-      <g class="intro-motes" fill="#d8eee7">
-        <circle class="mote mote--a" cx="443" cy="388" r="1.6"/><circle class="mote mote--b" cx="472" cy="376" r="1.1"/>
-        <circle class="mote mote--c" cx="520" cy="348" r="1.3"/><circle class="mote mote--a" cx="491" cy="416" r="1"/>
-        <circle class="mote mote--b intro-extra" cx="546" cy="295" r="1"/><circle class="mote mote--c intro-extra" cx="430" cy="434" r="1.2"/>
-      </g>
-    </g>
-    <g class="intro-trail" fill="#7bbd9f">
-      <circle class="mote mote--a" cx="420" cy="418" r="1.8"/><circle class="mote mote--b" cx="392" cy="432" r="1.2"/>
-      <circle class="mote mote--c" cx="452" cy="428" r="1.3"/><circle class="mote mote--a intro-extra" cx="365" cy="441" r="1"/>
-    </g>
-    <ellipse class="intro-lit-mist" cx="508" cy="479" rx="220" ry="60" fill="url(#intro-aura)"/>
-    <g class="intro-mist intro-mist--front" fill="url(#intro-mist)"><ellipse cx="490" cy="508" rx="400" ry="37"/><ellipse class="intro-extra" cx="570" cy="558" rx="360" ry="45"/></g>
-    <g class="intro-foreground" fill="none" stroke="#020b08" stroke-linecap="round">
-      <path d="M170 730Q227 461 188 50M203 377Q247 328 305 310M198 295Q153 252 98 246M198 225Q239 187 270 122M817 730Q777 397 851 30M805 361Q756 320 719 271M812 274Q875 215 925 205" stroke-width="15"/>
-      <path d="m259 327 11-39m-37 62 9-47m523 28-7-43m65-72 41-12" stroke-width="5"/>
-    </g>
-    <ellipse class="intro-flash" cx="545" cy="407" rx="410" ry="310" fill="url(#intro-aura)"/>
-  </svg>
+
+<dialog
+  class="magic-intro"
+  aria-label="Introducción de bosque mágico"
+  aria-modal="true"
+>
+  <div class="intro-scene" aria-hidden="true">
+    <img
+      class="intro-forest"
+      src="/images/magic/forest-night.png"
+      alt=""
+      width="1672"
+      height="940"
+      loading="eager"
+      fetchpriority="high"
+      decoding="async"
+    />
+
+    <div class="intro-vignette"></div>
+    <div class="intro-moon-glow"></div>
+    <div class="intro-rays"></div>
+
+    <div class="intro-mist intro-mist--back"></div>
+    <div class="intro-mist intro-mist--middle"></div>
+    <div class="intro-mist intro-mist--front"></div>
+
+    <div class="intro-doe-light"></div>
+
+    <div class="intro-doe">
+      <img
+        src="/images/magic/silver-doe.png"
+        alt=""
+        width="1152"
+        height="1376"
+        loading="eager"
+        fetchpriority="high"
+        decoding="async"
+      />
+    </div>
+
+    <div class="intro-particles">
+      {
+        particles.map((particle) => (
+          <span
+            class="intro-particle"
+            style={`--x:${particle.x}%;--y:${particle.y}%;--size:${particle.size}px;--delay:${particle.delay}s;--duration:${particle.duration}s;--drift:${particle.drift}px;`}
+          ></span>
+        ))
+      }
+    </div>
+
+    <div class="intro-reveal"></div>
+  </div>
+
+  <button class="intro-skip" type="button" autofocus>
+    Saltar introducción
+  </button>
 </dialog>
 
 <script is:inline>
   (() => {
     const dialog = document.querySelector('.magic-intro');
-    const reduced = matchMedia('(prefers-reduced-motion: reduce)');
-    // This runs once while parsing, never in response to selector changes.
-    if (!dialog || document.documentElement.dataset.theme !== 'slytherin-magico' || reduced.matches || !dialog.showModal) return;
-    const key = 'invitacion-xv-magic-intro-seen';
-    try {
-      if (sessionStorage.getItem(key)) return;
-      sessionStorage.setItem(key, '1');
-    } catch { return; } // Prefer an unobstructed invitation if storage is unavailable.
-    let timer;
-    let finished = false;
-    function finish(focusHero = true) {
-      if (finished) return;
-      finished = true;
-      clearTimeout(timer);
-      dialog.close();
-      reduced.removeEventListener('change', onPreference);
-      if (focusHero) {
-        const hero = document.getElementById('hero-title');
-        if (hero) {
-          // Skipping immediately must not leave the original hero entrance pending.
-          hero.closest('.hero-content')?.getAnimations({ subtree: true }).forEach((animation) => {
-            if (animation.animationName === 'hero-arrive') animation.cancel();
-          });
-          const previous = hero.getAttribute('tabindex');
-          hero.setAttribute('tabindex', '-1');
-          hero.focus({ preventScroll: true });
-          hero.addEventListener('blur', () => {
-            if (previous === null) hero.removeAttribute('tabindex');
-            else hero.setAttribute('tabindex', previous);
-          }, { once: true });
+    const skip = dialog?.querySelector('.intro-skip');
+    const reducedMotion = window.matchMedia(
+      '(prefers-reduced-motion: reduce)',
+    );
+    const storageKey = 'invitacion-xv-magic-intro-seen';
+    const assetPaths = [
+      '/images/magic/forest-night.png',
+      '/images/magic/silver-doe.png',
+    ];
+
+    let isRunning = false;
+    let isPreparing = false;
+    let finishTimer;
+    let fadeTimer;
+    let previousHtmlOverflow = '';
+    let previousBodyOverflow = '';
+
+    if (!dialog || !skip || !dialog.showModal) return;
+
+    const isSlytherinActive = () =>
+      document.documentElement.dataset.theme === 'slytherin-magico';
+
+    const preloadAsset = (src) =>
+      new Promise((resolve) => {
+        const image = new Image();
+        image.decoding = 'async';
+
+        image.onload = async () => {
+          try {
+            await image.decode?.();
+          } catch {
+            // La descarga ya terminó; no bloqueamos por un decode no compatible.
+          }
+
+          resolve(true);
+        };
+
+        image.onerror = () => resolve(false);
+        image.src = src;
+      });
+
+    // Comienza a descargar los recursos desde que carga la página.
+    const assetsReady = Promise.all(assetPaths.map(preloadAsset)).then(
+      (results) => results.every(Boolean),
+    );
+
+    const focusHero = () => {
+      const hero = document.getElementById('hero-title');
+
+      if (!hero) return;
+
+      const previousTabIndex = hero.getAttribute('tabindex');
+      hero.setAttribute('tabindex', '-1');
+      hero.focus({ preventScroll: true });
+
+      hero.addEventListener(
+        'blur',
+        () => {
+          if (previousTabIndex === null) {
+            hero.removeAttribute('tabindex');
+          } else {
+            hero.setAttribute('tabindex', previousTabIndex);
+          }
+        },
+        { once: true },
+      );
+    };
+
+    const preventScroll = (event) => event.preventDefault();
+
+    const onCancel = (event) => {
+      event.preventDefault();
+      finish({ focus: true });
+    };
+
+    const onKeyDown = (event) => {
+      if (event.key === 'Escape') finish({ focus: true });
+    };
+
+    const onMotionChange = (event) => {
+      if (event.matches) finish();
+    };
+
+    const finish = ({ focus = false } = {}) => {
+      if (!isRunning && !isPreparing) return;
+
+      isRunning = false;
+      isPreparing = false;
+      window.clearTimeout(fadeTimer);
+      window.clearTimeout(finishTimer);
+
+      dialog.classList.remove('is-loading', 'is-playing', 'is-leaving');
+      document.documentElement.style.overflow = previousHtmlOverflow;
+      document.body.style.overflow = previousBodyOverflow;
+
+      dialog.removeEventListener('cancel', onCancel);
+      dialog.removeEventListener('wheel', preventScroll);
+      dialog.removeEventListener('touchmove', preventScroll);
+      window.removeEventListener('keydown', onKeyDown);
+      reducedMotion.removeEventListener('change', onMotionChange);
+
+      if (dialog.open) dialog.close();
+
+      if (focus) focusHero();
+    };
+
+    const start = async ({ replay = false } = {}) => {
+      if (
+        isRunning ||
+        isPreparing ||
+        reducedMotion.matches ||
+        !isSlytherinActive()
+      ) {
+        return;
+      }
+
+      if (!replay) {
+        try {
+          if (sessionStorage.getItem(storageKey)) return;
+        } catch {
+          return;
         }
       }
-    }
-    function onPreference(event) { if (event.matches) finish(); }
-    dialog.querySelector('.intro-skip').addEventListener('click', () => finish());
-    dialog.addEventListener('cancel', (event) => { event.preventDefault(); finish(); });
-    dialog.addEventListener('wheel', (event) => event.preventDefault(), { passive: false });
-    reduced.addEventListener('change', onPreference);
-    addEventListener('pagehide', () => finish(false), { once: true });
-    dialog.addEventListener('animationend', (event) => {
-      if (event.target === dialog) finish();
+
+      isPreparing = true;
+      previousHtmlOverflow = document.documentElement.style.overflow;
+      previousBodyOverflow = document.body.style.overflow;
+      document.documentElement.style.overflow = 'hidden';
+      document.body.style.overflow = 'hidden';
+
+      try {
+        // Se abre de inmediato: nunca se muestra primero la página normal.
+        dialog.showModal();
+        dialog.classList.add('is-loading');
+      } catch {
+        isPreparing = false;
+        return;
+      }
+
+      dialog.addEventListener('cancel', onCancel);
+      dialog.addEventListener('wheel', preventScroll, { passive: false });
+      dialog.addEventListener('touchmove', preventScroll, { passive: false });
+      window.addEventListener('keydown', onKeyDown);
+      reducedMotion.addEventListener('change', onMotionChange);
+
+      const loadedSuccessfully = await assetsReady;
+
+      // El usuario pudo haber pulsado “Saltar introducción” mientras cargaba.
+      if (!isPreparing || !dialog.open) return;
+
+      if (
+        !loadedSuccessfully ||
+        reducedMotion.matches ||
+        !isSlytherinActive()
+      ) {
+        finish();
+        return;
+      }
+
+      if (!replay) {
+        try {
+          sessionStorage.setItem(storageKey, '1');
+        } catch {
+          // La intro puede continuar aunque sessionStorage falle.
+        }
+      }
+
+      isPreparing = false;
+      isRunning = true;
+
+      dialog.classList.remove('is-loading');
+
+      requestAnimationFrame(() => {
+        dialog.classList.add('is-playing');
+      });
+
+      fadeTimer = window.setTimeout(() => {
+        dialog.classList.add('is-leaving');
+      }, 3650);
+
+      finishTimer = window.setTimeout(() => {
+        finish();
+      }, 4300);
+    };
+
+    skip.addEventListener('click', () => finish({ focus: true }));
+
+    document.addEventListener('magic-intro:replay', () => {
+      start({ replay: true });
     });
-    try {
-      timer = setTimeout(finish, 2950);
-      dialog.showModal();
-    } catch { finish(false); }
+
+    start();
   })();
 </script>
 
 <style>
-  .magic-intro { position: fixed; inset: 0; width: 100%; height: 100%; max-width: none; max-height: none; margin: 0; padding: 0; border: 0; overflow: hidden; background: #061b13; color: #eef0e8; touch-action: none; }
-  .magic-intro::backdrop { background: transparent; }
-  .magic-intro:not([open]) { display: none; }
-  .intro-scene { display: block; width: 100%; height: 100%; }
-  .intro-skip { position: absolute; z-index: 1; top: max(1rem, env(safe-area-inset-top)); right: max(1rem, env(safe-area-inset-right)); min-height: 44px; padding: .6rem 1rem; border: 1px solid #c3ccd1; border-radius: 999px; background: #0b3d2e; color: #eef0e8; font: 0.85rem var(--font-body); cursor: pointer; }
-  .intro-skip:hover { background: #14553e; }
-  .intro-skip:focus-visible { outline: 3px solid #eef0e8; outline-offset: 4px; }
-  .intro-deer { filter: url(#intro-halo); }
-  .intro-travel { transform-origin: 500px 510px; }
-  .deer-neck { transform-origin: 513px 391px; }
-  .deer-antlers { transform-origin: 540px 306px; }
-  .deer-leg--rear, .deer-leg--rear-far { transform-origin: 434px 411px; }
-  .deer-leg--front, .deer-leg--front-far { transform-origin: 508px 410px; }
-  .intro-foreground { filter: url(#intro-soft); }
-  .intro-light, .intro-lit-mist, .intro-flash, .mote { opacity: 0; }
-  @media (prefers-reduced-motion: no-preference) {
-    .magic-intro[open] { animation: intro-reveal 2900ms linear both; }
-    [open] .intro-sky { animation: sky-drift 2900ms ease-out both; }
-    [open] .intro-cloud { animation: cloud-drift 2900ms linear both; }
-    [open] .intro-far { animation: far-drift 2900ms ease-out both; }
-    [open] .intro-middle { animation: middle-drift 2900ms ease-out both; }
-    [open] .intro-foreground { animation: foreground-drift 2900ms ease-out both; }
-    [open] .intro-mist--back { animation: mist-drift 2900ms linear both; }
-    [open] .intro-mist--front { animation: mist-drift 2900ms linear reverse both; }
-    [open] .intro-light { animation: spirit-glow 2350ms 150ms ease-in-out both; }
-    [open] .intro-travel { animation: deer-journey 2400ms 150ms ease-in-out both; }
-    [open] .intro-deer { animation: spirit-breathe 1800ms 350ms ease-in-out both; }
-    [open] .deer-leg--rear, [open] .deer-leg--front-far { animation: leg-step 1800ms 300ms ease-in-out both; }
-    [open] .deer-leg--front, [open] .deer-leg--rear-far { animation: leg-step 1800ms 300ms ease-in-out reverse both; }
-    [open] .deer-neck { animation: neck-sway 1800ms 300ms ease-in-out both; }
-    [open] .deer-antlers { animation: antler-sway 1800ms 350ms ease-in-out both; }
-    [open] .intro-ground { animation: ground-follow 2400ms 150ms ease-in-out both; }
-    [open] .intro-lit-mist { animation: spirit-glow 1600ms 950ms ease-in-out both; }
-    [open] .intro-flash { animation: spirit-glow 800ms 2000ms ease-in-out both; }
-    [open] .mote { animation: mote-release 1500ms 500ms ease-out both; }
-    [open] .mote--b { animation-delay: 700ms; }
-    [open] .mote--c { animation-delay: 950ms; }
+  .magic-intro {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    border: 0;
+    background: #020907;
+    color: #eef7f3;
+    opacity: 1;
+    transition: opacity 620ms cubic-bezier(.22, 1, .36, 1);
   }
-  @keyframes intro-reveal { 0%, 76% { opacity: 1; } 100% { opacity: 0; } }
-  @keyframes sky-drift { from { transform: translateX(2px); } to { transform: translateX(-2px); } }
-  @keyframes cloud-drift { to { transform: translateX(12px); } }
-  @keyframes far-drift { from { transform: translateX(4px); opacity: .28; } to { transform: translateX(-5px); opacity: .38; } }
-  @keyframes middle-drift { from { transform: translateX(7px); } to { transform: translateX(-9px); } }
-  @keyframes foreground-drift { from { transform: translateX(-7px); } to { transform: translateX(10px); } }
-  @keyframes spirit-glow { 0%, 100% { opacity: 0; } 45%, 65% { opacity: .8; } }
-  @keyframes deer-journey {
-    0% { opacity: 0; transform: translate(-30px, -8px) scale(.94); }
-    22% { opacity: .85; }
-    48% { opacity: 1; transform: translate(-3px, -4px) scale(.98); }
-    76% { opacity: .9; transform: translate(19px, 2px) scale(1.025); }
-    100% { opacity: 0; transform: translate(33px, 7px) scale(1.045); }
+
+  .magic-intro::backdrop {
+    background: #020907;
   }
-  @keyframes spirit-breathe { 0%, 100% { opacity: .78; } 50% { opacity: 1; } }
-  @keyframes leg-step { 0% { transform: rotate(-5deg); } 50% { transform: rotate(5deg); } 100% { transform: rotate(-3deg); } }
-  @keyframes neck-sway { 0%, 100% { transform: rotate(-1deg); } 50% { transform: rotate(1.3deg); } }
-  @keyframes antler-sway { 0%, 100% { transform: rotate(-.6deg); } 50% { transform: rotate(.8deg); } }
-  @keyframes ground-follow { 0% { opacity: 0; transform: translate(-30px, -8px); } 35%, 70% { opacity: .8; } 100% { opacity: 0; transform: translate(33px, 7px); } }
-  @keyframes mist-drift { from { transform: translateX(-14px); } to { transform: translateX(16px); } }
-  @keyframes mote-release { 0% { opacity: 0; transform: translate(0, 3px); } 25% { opacity: .65; } 100% { opacity: 0; transform: translate(-26px, -24px); } }
-  @media (max-width: 42rem) {
-    .intro-extra, .intro-cloud { display: none; }
-    .intro-deer, .intro-foreground { filter: none; }
-    .intro-far { opacity: .28; }
-    [open] .intro-sky { animation: none; }
+
+  .magic-intro:not([open]) {
+    display: none;
   }
-  @media (prefers-reduced-motion: reduce) { .magic-intro[open] { display: none; } }
+
+  .magic-intro.is-leaving {
+    opacity: 0;
+  }
+
+  .intro-scene,
+  .intro-forest,
+  .intro-vignette,
+  .intro-moon-glow,
+  .intro-rays,
+  .intro-mist,
+  .intro-doe-light,
+  .intro-doe,
+  .intro-particles,
+  .intro-reveal {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .intro-scene {
+    overflow: hidden;
+    background: #020907;
+    transform: scale(1.03);
+  }
+
+  .intro-forest {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    filter: saturate(.82) contrast(1.04) brightness(.76);
+    transform: scale(1.09);
+  }
+
+  .intro-vignette {
+    background:
+      radial-gradient(
+        ellipse at center,
+        transparent 26%,
+        rgba(0, 13, 9, .18) 58%,
+        rgba(0, 6, 4, .92) 100%
+      );
+  }
+
+  .intro-moon-glow {
+    background:
+      radial-gradient(
+        circle at 68% 18%,
+        rgba(222, 245, 240, .22),
+        rgba(152, 216, 194, .08) 9%,
+        transparent 26%
+      );
+    mix-blend-mode: screen;
+    opacity: .65;
+  }
+
+  .intro-rays {
+    opacity: 0;
+    background:
+      linear-gradient(
+        112deg,
+        transparent 33%,
+        rgba(176, 244, 213, .1) 44%,
+        transparent 57%
+      ),
+      linear-gradient(
+        72deg,
+        transparent 42%,
+        rgba(191, 229, 222, .08) 53%,
+        transparent 66%
+      );
+    mix-blend-mode: screen;
+    transform: scale(1.2);
+  }
+
+  .intro-mist {
+    opacity: 0;
+    filter: blur(18px);
+    mix-blend-mode: screen;
+  }
+
+  .intro-mist--back {
+    background:
+      radial-gradient(
+        ellipse at 26% 57%,
+        rgba(175, 211, 207, .22),
+        transparent 44%
+      ),
+      radial-gradient(
+        ellipse at 72% 61%,
+        rgba(110, 188, 153, .18),
+        transparent 46%
+      );
+  }
+
+  .intro-mist--middle {
+    background:
+      radial-gradient(
+        ellipse at 49% 70%,
+        rgba(194, 227, 221, .26),
+        transparent 51%
+      );
+    filter: blur(27px);
+  }
+
+  .intro-mist--front {
+    inset: auto -16% -22%;
+    height: 51%;
+    background:
+      radial-gradient(
+        ellipse at center,
+        rgba(205, 232, 227, .26),
+        rgba(87, 165, 132, .1) 37%,
+        transparent 70%
+      );
+    filter: blur(35px);
+  }
+
+  .intro-doe-light {
+    inset: auto 50% 19%;
+    width: min(34vw, 420px);
+    height: min(17vw, 180px);
+    transform: translateX(-50%) scale(.4);
+    border-radius: 50%;
+    opacity: 0;
+    background:
+      radial-gradient(
+        ellipse,
+        rgba(237, 250, 248, .42),
+        rgba(102, 223, 171, .18) 36%,
+        transparent 72%
+      );
+    filter: blur(18px);
+    mix-blend-mode: screen;
+  }
+
+  .intro-doe {
+    inset: auto 50% 16%;
+    width: clamp(150px, 18vw, 290px);
+    height: auto;
+    opacity: 0;
+    transform: translate(-50%, 8%) scale(.72);
+    transform-origin: center bottom;
+    filter: blur(13px) drop-shadow(0 0 0 rgba(0, 0, 0, 0));
+  }
+
+  .intro-doe img {
+    display: block;
+    width: 100%;
+    height: auto;
+    filter:
+      brightness(1.08)
+      contrast(1.02)
+      drop-shadow(0 0 22px rgba(205, 248, 238, .38))
+      drop-shadow(0 0 52px rgba(77, 213, 157, .22));
+  }
+
+  .intro-particles {
+    overflow: hidden;
+    mix-blend-mode: screen;
+  }
+
+  .intro-particle {
+    position: absolute;
+    left: var(--x);
+    top: var(--y);
+    width: var(--size);
+    height: var(--size);
+    border-radius: 999px;
+    opacity: 0;
+    background: rgba(235, 255, 250, .95);
+    box-shadow:
+      0 0 7px rgba(238, 255, 251, .9),
+      0 0 15px rgba(84, 230, 164, .66);
+  }
+
+  .intro-reveal {
+    opacity: 0;
+    background:
+      radial-gradient(
+        circle at 50% 60%,
+        rgba(235, 255, 249, .96),
+        rgba(150, 240, 194, .68) 16%,
+        rgba(23, 111, 76, .4) 41%,
+        transparent 70%
+      );
+    mix-blend-mode: screen;
+    transform: scale(.2);
+  }
+
+  .intro-skip {
+    position: absolute;
+    z-index: 5;
+    top: max(1rem, env(safe-area-inset-top));
+    right: max(1rem, env(safe-area-inset-right));
+    min-height: 44px;
+    padding: .62rem 1rem;
+    border: 1px solid rgba(213, 235, 228, .72);
+    border-radius: 999px;
+    background: rgba(3, 28, 20, .72);
+    color: #eef7f3;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, .24);
+    backdrop-filter: blur(8px);
+    font: 600 .82rem var(--font-body);
+    letter-spacing: .02em;
+    cursor: pointer;
+  }
+
+  .intro-skip:hover {
+    background: rgba(16, 87, 61, .88);
+  }
+
+  .intro-skip:focus-visible {
+    outline: 3px solid #eef7f3;
+    outline-offset: 4px;
+  }
+
+  .magic-intro.is-playing .intro-scene {
+    animation: camera-move 4.3s cubic-bezier(.22, 1, .36, 1) forwards;
+  }
+
+  .magic-intro.is-playing .intro-forest {
+    animation: forest-depth 4.3s cubic-bezier(.22, 1, .36, 1) forwards;
+  }
+
+  .magic-intro.is-playing .intro-rays {
+    animation: rays-awaken 2.2s ease-out .55s both;
+  }
+
+  .magic-intro.is-playing .intro-mist--back {
+    animation: mist-back 4.1s ease-in-out both;
+  }
+
+  .magic-intro.is-playing .intro-mist--middle {
+    animation: mist-middle 3.6s ease-in-out .5s both;
+  }
+
+  .magic-intro.is-playing .intro-mist--front {
+    animation: mist-front 4s ease-in-out .3s both;
+  }
+
+  .magic-intro.is-playing .intro-doe-light {
+    animation: doe-light 3.65s cubic-bezier(.22, 1, .36, 1) .85s both;
+  }
+
+  .magic-intro.is-playing .intro-doe {
+    animation:
+      doe-appear 2.35s cubic-bezier(.22, 1, .36, 1) .95s both,
+      doe-breathe 2.8s ease-in-out 2.35s both;
+  }
+
+  .magic-intro.is-playing .intro-particle {
+    animation: particle-rise var(--duration) ease-in-out var(--delay) both;
+  }
+
+  .magic-intro.is-playing .intro-reveal {
+    animation: magical-reveal 1s cubic-bezier(.22, 1, .36, 1) 3.3s both;
+  }
+
+  .intro-scene {
+    opacity: 0;
+    transition: opacity 360ms ease;
+  }
+
+  .magic-intro.is-playing .intro-scene {
+    opacity: 1;
+  }
+
+  .magic-intro.is-loading::before {
+    content: '';
+    position: absolute;
+    inset: -25%;
+    z-index: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(
+        circle at 50% 56%,
+        rgba(118, 230, 169, .22),
+        rgba(37, 113, 78, .12) 22%,
+        transparent 53%
+      ),
+      radial-gradient(
+        circle at 65% 18%,
+        rgba(215, 241, 235, .1),
+        transparent 26%
+      ),
+      #020907;
+    animation: magic-loading-glow 1.6s ease-in-out infinite alternate;
+  }
+
+  .magic-intro.is-loading .intro-skip {
+    z-index: 5;
+  }
+
+  @keyframes magic-loading-glow {
+    from {
+      opacity: .55;
+      transform: scale(.95);
+    }
+
+    to {
+      opacity: 1;
+      transform: scale(1.08);
+    }
+  }
+
+  @keyframes camera-move {
+    0% { transform: scale(1.08) translate3d(0, 1.5%, 0); }
+    52% { transform: scale(1.035) translate3d(-.6%, -.3%, 0); }
+    100% { transform: scale(1.12) translate3d(0, -1.1%, 0); }
+  }
+
+  @keyframes forest-depth {
+    0% { transform: scale(1.12) translate3d(0, 1%, 0); filter: saturate(.64) brightness(.57); }
+    48% { transform: scale(1.075) translate3d(.35%, 0, 0); filter: saturate(.8) brightness(.74); }
+    100% { transform: scale(1.16) translate3d(-.3%, -1.1%, 0); filter: saturate(.94) brightness(.86); }
+  }
+
+  @keyframes rays-awaken {
+    0% { opacity: 0; transform: scale(1.2) rotate(-3deg); }
+    45% { opacity: 1; }
+    100% { opacity: .38; transform: scale(1.04) rotate(1deg); }
+  }
+
+  @keyframes mist-back {
+    0% { opacity: 0; transform: translate3d(-7%, 4%, 0) scale(.86); }
+    34% { opacity: .45; }
+    100% { opacity: .3; transform: translate3d(8%, -2%, 0) scale(1.15); }
+  }
+
+  @keyframes mist-middle {
+    0% { opacity: 0; transform: translate3d(12%, 8%, 0) scale(.76); }
+    40% { opacity: .56; }
+    100% { opacity: .29; transform: translate3d(-9%, -4%, 0) scale(1.2); }
+  }
+
+  @keyframes mist-front {
+    0% { opacity: 0; transform: translate3d(-8%, 18%, 0) scale(.78); }
+    42% { opacity: .5; }
+    100% { opacity: .22; transform: translate3d(10%, -3%, 0) scale(1.18); }
+  }
+
+  @keyframes doe-light {
+    0% { opacity: 0; transform: translateX(-50%) scale(.34); }
+    38% { opacity: .92; transform: translateX(-50%) scale(1.08); }
+    100% { opacity: .32; transform: translateX(-50%) scale(1.32); }
+  }
+
+  @keyframes doe-appear {
+    0% {
+      opacity: 0;
+      transform: translate(-58%, 11%) scale(.62);
+      filter: blur(16px);
+    }
+    52% {
+      opacity: 1;
+      transform: translate(-50%, 0) scale(.9);
+      filter: blur(0);
+    }
+    100% {
+      opacity: .96;
+      transform: translate(-48%, -1.5%) scale(.95);
+      filter: blur(0);
+    }
+  }
+
+  @keyframes doe-breathe {
+    0%, 100% { transform: translate(-48%, -1.5%) scale(.95); }
+    50% { transform: translate(-47.4%, -2.3%) scale(.965); }
+  }
+
+  @keyframes particle-rise {
+    0% {
+      opacity: 0;
+      transform: translate3d(0, 14px, 0) scale(.4);
+    }
+    24% { opacity: .86; }
+    78% { opacity: .42; }
+    100% {
+      opacity: 0;
+      transform: translate3d(var(--drift), -110px, 0) scale(1.3);
+    }
+  }
+
+  @keyframes magical-reveal {
+    0% { opacity: 0; transform: scale(.15); }
+    58% { opacity: .95; transform: scale(1.18); }
+    100% { opacity: 1; transform: scale(2.25); }
+  }
+
+  @media (max-width: 700px) {
+    .intro-doe {
+      width: min(48vw, 235px);
+      bottom: 19%;
+    }
+
+    .intro-doe-light {
+      bottom: 21%;
+      width: min(66vw, 330px);
+    }
+
+    .intro-forest {
+      object-position: 51% center;
+    }
+
+    .intro-particle:nth-child(n + 16) {
+      display: none;
+    }
+
+    .intro-mist--front {
+      opacity: .75;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .magic-intro[open] {
+      display: none;
+    }
+  }
 </style>

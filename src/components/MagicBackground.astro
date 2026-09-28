@@ -1,0 +1,132 @@
+<div class="magic-page-pattern" aria-hidden="true">
+  <img
+    class="magic-page-pattern__layer magic-page-pattern__layer--primary"
+    src="/images/magic/magic-ornaments.png"
+    alt=""
+    decoding="async"
+  />
+
+  <img
+    class="magic-page-pattern__layer magic-page-pattern__layer--secondary"
+    src="/images/magic/magic-ornaments.png"
+    alt=""
+    decoding="async"
+  />
+</div>
+
+<script is:inline>
+  (() => {
+    const pattern = document.querySelector('.magic-page-pattern');
+
+    if (!pattern) return;
+
+    const images = [...pattern.querySelectorAll('img')];
+
+    const waitForImage = (image) => {
+      if (image.complete && image.naturalWidth > 0) {
+        return image.decode?.().catch(() => undefined) ?? Promise.resolve();
+      }
+
+      return new Promise((resolve) => {
+        image.addEventListener('load', resolve, { once: true });
+        image.addEventListener('error', resolve, { once: true });
+      });
+    };
+
+    Promise.all(images.map(waitForImage)).then(() => {
+      pattern.classList.add('is-ready');
+    });
+  })();
+</script>
+
+<style is:global>
+  .magic-page-pattern {
+    position: fixed;
+    inset: 0;
+    z-index: 3;
+    overflow: hidden;
+    pointer-events: none;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 500ms ease;
+  }
+
+  :root[data-theme='slytherin-magico'] .magic-page-pattern.is-ready {
+    visibility: visible;
+    opacity: 0.7;
+  }
+
+  .magic-page-pattern__layer {
+    position: absolute;
+    display: block;
+    width: max(920px, 88vw);
+    max-width: none;
+    height: auto;
+    mix-blend-mode: screen;
+    filter: saturate(.78) contrast(.92);
+    user-select: none;
+  }
+
+  .magic-page-pattern__layer--primary {
+    top: -8rem;
+    left: -15vw;
+    opacity: .13;
+    transform: rotate(-5deg);
+    animation: magic-ornaments-drift 24s ease-in-out infinite alternate;
+  }
+
+  .magic-page-pattern__layer--secondary {
+    right: -25vw;
+    bottom: -12rem;
+    width: max(820px, 76vw);
+    opacity: .065;
+    transform: rotate(13deg) scaleX(-1);
+    animation: magic-ornaments-drift-reverse 30s ease-in-out infinite alternate;
+  }
+
+  @keyframes magic-ornaments-drift {
+    from {
+      translate: 0 0;
+      rotate: 0deg;
+    }
+
+    to {
+      translate: 3vw -2rem;
+      rotate: 1deg;
+    }
+  }
+
+  @keyframes magic-ornaments-drift-reverse {
+    from {
+      translate: 0 0;
+      rotate: 0deg;
+    }
+
+    to {
+      translate: -3vw 2rem;
+      rotate: -1deg;
+    }
+  }
+
+  @media (max-width: 700px) {
+    .magic-page-pattern__layer--primary {
+      top: -2rem;
+      left: -42vw;
+      width: 128vw;
+      opacity: .105;
+    }
+
+    .magic-page-pattern__layer--secondary {
+      right: -55vw;
+      bottom: -3rem;
+      width: 123vw;
+      opacity: .05;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .magic-page-pattern__layer {
+      animation: none;
+    }
+  }
+</style>

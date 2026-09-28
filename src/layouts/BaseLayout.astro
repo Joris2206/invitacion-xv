@@ -4,6 +4,7 @@ import '../styles/motion.css';
 import ThemePicker from '../components/ThemePicker.astro';
 import MagicIntro from '../components/MagicIntro.astro';
 import { themes, themeStorageKey } from '../data/themes';
+import MagicBackground from '../components/MagicBackground.astro';
 
 interface Props {
   title: string;
@@ -28,10 +29,14 @@ const { title, description } = Astro.props;
     </script>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" href="/favicon.ico" />
+    <link rel="preload" as="image" href="/images/magic/forest-night.png" type="image/png" fetchpriority="high" />
+    <link rel="preload" as="image" href="/images/magic/silver-doe.png" type="image/png" fetchpriority="high" />
+    <link rel="preload" as="image" href="/images/magic/magic-ornaments.png" type="image/png" fetchpriority="high" />
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
   </head>
   <body>
+    <MagicBackground />
     <ThemePicker />
     <slot />
     <MagicIntro />
