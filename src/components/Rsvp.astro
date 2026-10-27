@@ -4,7 +4,7 @@ interface Props {
   rsvpUrl: string;
 }
 
-const { name, rsvpUrl } = Astro.props;
+const { name } = Astro.props;
 ---
 
 <section class="rsvp-section" aria-labelledby="rsvp-title">
@@ -14,7 +14,177 @@ const { name, rsvpUrl } = Astro.props;
     <p class="eyebrow">Espero celebrar contigo</p>
     <h2 id="rsvp-title">¿Me acompañas?</h2>
     <p>Tu presencia hará que esta noche sea aún más especial. Por favor, confirma tu asistencia.</p>
-    <a class="button button--light" href={rsvpUrl}>Confirmar asistencia</a>
+
+    <form class="rsvp-form" data-rsvp-form novalidate>
+      <fieldset class="rsvp-fields">
+        <legend class="sr-only">Confirmación de asistencia</legend>
+        <label class="rsvp-label" for="rsvp-name">Escribe tu nombre completo</label>
+        <input class="rsvp-input" id="rsvp-name" name="name" type="text" autocomplete="name" maxlength="160" required aria-describedby="rsvp-status" />
+
+        <fieldset class="rsvp-attendance">
+          <legend>¿Podrás acompañarnos?</legend>
+          <div class="rsvp-options">
+            <label class="rsvp-option">
+              <input type="radio" name="attendance" value="confirmed" required />
+              <span class="rsvp-option-mark" aria-hidden="true"></span>
+              <span>Sí, asistiré</span>
+            </label>
+            <label class="rsvp-option">
+              <input type="radio" name="attendance" value="declined" required />
+              <span class="rsvp-option-mark" aria-hidden="true"></span>
+              <span>No podré asistir</span>
+            </label>
+          </div>
+        </fieldset>
+
+        <button class="button button--light rsvp-submit" type="submit">
+          <span data-submit-label>Enviar respuesta</span>
+          <span class="rsvp-loading" data-loading-label hidden><span class="rsvp-spinner" aria-hidden="true"></span>Enviando…</span>
+        </button>
+      </fieldset>
+      <p id="rsvp-status" class="rsvp-status" role="status" aria-live="polite" aria-atomic="true"></p>
+    </form>
+
     <p class="rsvp-name">Con cariño, <span>{name}</span></p>
   </div>
 </section>
+
+<script>
+  import { supabase } from '../lib/supabase';
+
+  type Attendance = 'confirmed' | 'declined';
+  type RpcResult = {
+    ok: boolean;
+    result: 'matched' | 'manual_review' | 'invalid_name' | 'invalid_attendance';
+  };
+
+  document.querySelectorAll<HTMLFormElement>('[data-rsvp-form]').forEach((form) => {
+    const fields = form.querySelector<HTMLFieldSetElement>('.rsvp-fields')!;
+    const nameInput = form.elements.namedItem('name') as HTMLInputElement;
+    const attendanceInputs = Array.from(form.querySelectorAll<HTMLInputElement>('input[name="attendance"]'));
+    const status = form.querySelector<HTMLElement>('.rsvp-status')!;
+    const submitLabel = form.querySelector<HTMLElement>('[data-submit-label]')!;
+    const loadingLabel = form.querySelector<HTMLElement>('[data-loading-label]')!;
+    let submitting = false;
+
+    const showStatus = (message: string, kind: 'error' | 'success' | 'review' | '') => {
+      status.textContent = message;
+      status.dataset.kind = kind;
+    };
+
+    const clearValidation = () => {
+      nameInput.removeAttribute('aria-invalid');
+      attendanceInputs.forEach((input) => input.removeAttribute('aria-invalid'));
+      if (status.dataset.kind === 'error') showStatus('', '');
+    };
+
+    nameInput.addEventListener('input', clearValidation);
+    attendanceInputs.forEach((input) => input.addEventListener('change', clearValidation));
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      if (submitting) return;
+
+      const enteredName = nameInput.value.trim();
+      const selectedAttendance = form.querySelector<HTMLInputElement>('input[name="attendance"]:checked');
+
+      if (!enteredName) {
+        nameInput.setAttribute('aria-invalid', 'true');
+        showStatus('Escribe tu nombre completo antes de enviar.', 'error');
+        nameInput.focus();
+        return;
+      }
+      if (!selectedAttendance) {
+        attendanceInputs.forEach((input) => input.setAttribute('aria-invalid', 'true'));
+        showStatus('Selecciona si podrás asistir antes de enviar.', 'error');
+        attendanceInputs[0]?.focus();
+        return;
+      }
+
+      submitting = true;
+      fields.disabled = true;
+      form.setAttribute('aria-busy', 'true');
+      delete form.dataset.submitState;
+      showStatus('', '');
+      submitLabel.hidden = true;
+      loadingLabel.hidden = false;
+
+      try {
+        const attendance = selectedAttendance.value as Attendance;
+        const { data, error } = await supabase.rpc('confirm_invitation', {
+          p_name: enteredName,
+          p_attendance: attendance,
+        });
+        if (error) throw error;
+
+        const response = data as RpcResult | null;
+        if (response?.result === 'invalid_name') {
+          nameInput.setAttribute('aria-invalid', 'true');
+          showStatus('Escribe tu nombre completo antes de enviar.', 'error');
+          nameInput.focus();
+        } else if (response?.result === 'invalid_attendance') {
+          attendanceInputs.forEach((input) => input.setAttribute('aria-invalid', 'true'));
+          showStatus('Selecciona si podrás asistir antes de enviar.', 'error');
+          attendanceInputs[0]?.focus();
+        } else if (response?.result === 'matched') {
+          showStatus(attendance === 'confirmed' ? '¡Gracias! Tu confirmación fue registrada.' : 'Gracias por avisarnos. Lamentaremos no contar con tu presencia.', 'success');
+          form.dataset.submitState = 'success';
+        } else if (response?.result === 'manual_review') {
+          showStatus('Recibimos tu respuesta. Revisaremos manualmente el nombre ingresado para confirmar tu registro.', 'review');
+          form.dataset.submitState = 'success';
+        } else {
+          throw new Error('Respuesta inesperada de confirm_invitation');
+        }
+      } catch (error) {
+        console.error('No se pudo registrar la confirmación de asistencia.', error);
+        showStatus('No pudimos guardar tu respuesta. Inténtalo nuevamente en unos minutos.', 'error');
+      } finally {
+        submitting = false;
+        fields.disabled = false;
+        form.removeAttribute('aria-busy');
+        submitLabel.hidden = false;
+        loadingLabel.hidden = true;
+      }
+    });
+  });
+</script>
+
+<style>
+  .rsvp-form { position: relative; width: min(100%, 35rem); margin: 2rem auto 0; padding: 1.4rem; border: 1px solid rgba(var(--accent-light-rgb), 0.55); border-radius: 1.25rem; background: rgba(var(--surface-rgb), 0.96); box-shadow: 0 1rem 2.5rem rgba(0, 0, 0, 0.16); color: var(--ink); text-align: left; }
+  .rsvp-fields, .rsvp-attendance { min-width: 0; margin: 0; padding: 0; border: 0; }
+  .rsvp-label, .rsvp-attendance legend { display: block; margin-bottom: 0.55rem; color: var(--ink); font-size: 0.84rem; font-weight: 700; letter-spacing: 0.035em; }
+  .rsvp-input { width: 100%; min-height: 3.25rem; border: 1px solid var(--rose-200); border-radius: 0.75rem; padding: 0.75rem 0.9rem; background: var(--white); color: var(--ink); font: inherit; line-height: 1.3; }
+  .rsvp-input:hover { border-color: var(--gold-light); }
+  .rsvp-input:focus-visible, .rsvp-option:has(input:focus-visible) { outline: 3px solid var(--focus); outline-offset: 3px; }
+  .rsvp-input[aria-invalid="true"], .rsvp-option:has(input[aria-invalid="true"]) { border-color: var(--rose-500); }
+  .rsvp-attendance { margin-top: 1.25rem; }
+  .rsvp-options { display: grid; gap: 0.7rem; }
+  .rsvp-option { position: relative; display: flex; min-height: 3.25rem; align-items: center; gap: 0.7rem; border: 1px solid var(--rose-200); border-radius: 0.75rem; padding: 0.7rem 0.85rem; background: var(--white); color: var(--ink); cursor: pointer; font-size: 0.94rem; transition: border-color 180ms ease, background-color 180ms ease, box-shadow 180ms ease; }
+  .rsvp-option:hover { border-color: var(--gold-light); }
+  .rsvp-option:has(input:checked) { border-color: var(--gold); background: var(--champagne-light); }
+  .rsvp-option input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+  .rsvp-option-mark { display: grid; flex: 0 0 1.15rem; width: 1.15rem; height: 1.15rem; border: 1px solid var(--rose-400); border-radius: 50%; place-items: center; }
+  .rsvp-option-mark::after { width: 0.55rem; height: 0.55rem; border-radius: 50%; background: var(--primary-bg); content: ''; opacity: 0; transform: scale(0.5); transition: opacity 160ms ease, transform 160ms ease; }
+  .rsvp-option input:checked + .rsvp-option-mark::after { opacity: 1; transform: scale(1); }
+  .rsvp-submit { width: 100%; margin-top: 1.4rem; border-color: var(--primary-bg); background: var(--primary-bg); color: var(--on-primary); cursor: pointer; }
+  .rsvp-submit:hover { border-color: var(--primary-hover); background: var(--primary-hover); color: var(--on-primary); }
+  .rsvp-submit:disabled { cursor: wait; opacity: 0.72; transform: none; }
+  .rsvp-loading { align-items: center; gap: 0.55rem; }
+  .rsvp-loading:not([hidden]) { display: inline-flex; }
+  .rsvp-spinner { width: 1rem; height: 1rem; border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; animation: rsvp-spin 700ms linear infinite; }
+  .rsvp-status { min-height: 1.5rem; margin: 1rem 0 0; color: var(--muted); font-size: 0.9rem; font-weight: 600; line-height: 1.5; text-align: center; }
+  .rsvp-status[data-kind="error"] { color: var(--rose-700); }
+  .rsvp-status[data-kind="success"] { color: var(--rose-700); }
+  .rsvp-status[data-kind="review"] { color: var(--gold); }
+
+  :global(:root[data-theme="slytherin-magico"]) .rsvp-form { border-color: rgba(195, 204, 209, 0.72); box-shadow: 0 0 0 1px rgba(73, 160, 120, 0.28), 0 0 2rem rgba(73, 160, 120, 0.16), 0 1rem 2.5rem rgba(0, 0, 0, 0.28); }
+  :global(:root[data-theme="slytherin-magico"]) .rsvp-form::after { position: absolute; right: 12%; bottom: -1px; left: 12%; height: 2px; background: linear-gradient(90deg, transparent, #49a078, #eef0e8, #49a078, transparent); box-shadow: 0 0 0.7rem #49a078; content: ''; opacity: 0; transform: scaleX(0); }
+
+  @media (prefers-reduced-motion: no-preference) {
+    :global(:root[data-theme="slytherin-magico"]) .rsvp-form[data-submit-state="success"]::after { animation: rsvp-magic-line 900ms ease-out both; }
+  }
+  @media (min-width: 34rem) { .rsvp-form { padding: 1.8rem; } .rsvp-options { grid-template-columns: 1fr 1fr; } }
+  @media (prefers-reduced-motion: reduce) { .rsvp-spinner { animation: none; border-right-color: currentColor; opacity: 0.65; } }
+  @keyframes rsvp-spin { to { transform: rotate(360deg); } }
+  @keyframes rsvp-magic-line { 0% { opacity: 0; transform: scaleX(0); } 35% { opacity: 1; } 75% { opacity: 0.9; transform: scaleX(1); } 100% { opacity: 0; transform: scaleX(1); } }
+</style>
