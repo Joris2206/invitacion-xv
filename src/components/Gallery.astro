@@ -1,11 +1,14 @@
 ---
 import SectionHeading from './SectionHeading.astro';
+import { Image } from 'astro:assets';
 
 interface GalleryItem {
   label: string;
-  image?: string;
+  image: string;
   alt: string;
   className?: string;
+  width: number;
+  height: number;
 }
 
 interface Props {
@@ -25,18 +28,85 @@ const { items } = Astro.props;
     />
     <div class="gallery-grid">
       {items.map((item, index) => (
-        <div class:list={['gallery-card', item.className]} tabindex="0" role="group" aria-label={item.alt}>
-          {item.image ? (
-            <img src={item.image} alt={item.alt} loading="lazy" />
-          ) : (
-            <>
-              <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M8 10h32v28H8z"/><circle cx="18" cy="20" r="4"/><path d="m10 35 10-9 7 6 5-4 6 7"/></svg>
-              <span>{item.label}</span>
-              <small>Espacio para fotografía {index + 1}</small>
-            </>
-          )}
-        </div>
+        <figure class:list={['gallery-card', item.className]}>
+          <button
+            class="gallery-trigger"
+            type="button"
+            aria-label={`Ampliar: ${item.label}`}
+            data-gallery-index={index}
+          >
+            <Image
+              src={item.image}
+              alt={item.alt}
+              width={item.width}
+              height={item.height}
+              loading="lazy"
+              decoding="async"
+            />
+          </button>
+        </figure>
       ))}
     </div>
   </div>
+
+  <dialog class="gallery-lightbox" aria-label="Fotografía ampliada">
+    <div class="gallery-lightbox__frame">
+      <button class="gallery-lightbox__close" type="button" aria-label="Cerrar fotografía">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M6 6l12 12M18 6 6 18" />
+        </svg>
+      </button>
+      <button class="gallery-lightbox__nav gallery-lightbox__nav--previous" type="button" aria-label="Fotografía anterior">‹</button>
+      <img class="gallery-lightbox__image" alt="" width="1087" height="1447" />
+      <button class="gallery-lightbox__nav gallery-lightbox__nav--next" type="button" aria-label="Fotografía siguiente">›</button>
+    </div>
+  </dialog>
 </section>
+
+<script>
+  const gallery = document.querySelector<HTMLElement>('.gallery-section');
+  const dialog = gallery?.querySelector<HTMLDialogElement>('.gallery-lightbox');
+  const triggers = Array.from(gallery?.querySelectorAll<HTMLButtonElement>('.gallery-trigger') ?? []);
+  const lightboxImage = dialog?.querySelector<HTMLImageElement>('.gallery-lightbox__image');
+  const closeButton = dialog?.querySelector<HTMLButtonElement>('.gallery-lightbox__close');
+  const previousButton = dialog?.querySelector<HTMLButtonElement>('.gallery-lightbox__nav--previous');
+  const nextButton = dialog?.querySelector<HTMLButtonElement>('.gallery-lightbox__nav--next');
+  let activeIndex = 0;
+
+  const showImage = (index: number) => {
+    if (!lightboxImage || triggers.length === 0) return;
+    activeIndex = (index + triggers.length) % triggers.length;
+    const sourceImage = triggers[activeIndex].querySelector('img');
+    if (!sourceImage) return;
+    lightboxImage.src = sourceImage.currentSrc || sourceImage.src;
+    lightboxImage.alt = sourceImage.alt;
+    lightboxImage.width = sourceImage.naturalWidth || sourceImage.width;
+    lightboxImage.height = sourceImage.naturalHeight || sourceImage.height;
+  };
+
+  triggers.forEach((trigger, index) => {
+    trigger.addEventListener('click', () => {
+      if (!dialog) return;
+      showImage(index);
+      dialog.showModal();
+    });
+  });
+
+  closeButton?.addEventListener('click', () => dialog?.close());
+  previousButton?.addEventListener('click', () => showImage(activeIndex - 1));
+  nextButton?.addEventListener('click', () => showImage(activeIndex + 1));
+  dialog?.addEventListener('click', (event) => {
+    if (event.target === dialog) dialog.close();
+  });
+  dialog?.addEventListener('close', () => triggers[activeIndex]?.focus());
+  dialog?.addEventListener('keydown', (event) => {
+    if (event.key === 'ArrowLeft') {
+      event.preventDefault();
+      showImage(activeIndex - 1);
+    }
+    if (event.key === 'ArrowRight') {
+      event.preventDefault();
+      showImage(activeIndex + 1);
+    }
+  });
+</script>

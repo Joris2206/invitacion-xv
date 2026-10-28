@@ -2,9 +2,9 @@ export const invitation = {
   celebrant: 'Angie Lucía Mora Loaisiga',
   shortName: 'Angie',
   date: 'Sábado, 28 de noviembre de 2026',
-  time: '8:00 p. m.',
+  time: '7:00 p. m.',
   // Hora de Nicaragua (America/Managua, UTC-06:00).
-  startsAt: '2026-11-28T20:00:00-06:00',
+  startsAt: '2026-11-28T19:00:00-06:00',
   venue: 'Salón y Eventos El Rancho',
   address: 'Villa Fontana, Colegio Nórdico 300 mts. al Sur, punta plancha M/D',
   mapsUrl:
@@ -19,8 +19,28 @@ export const invitation = {
 };
 
 export const galleryItems = [
-  { label: 'Recuerdo 01', image: '', alt: 'Retrato de Angie', className: 'gallery-card--tall' },
-  { label: 'Recuerdo 02', image: '', alt: 'Angie sonriendo', className: '' },
-  { label: 'Recuerdo 03', image: '', alt: 'Un recuerdo especial de Angie', className: '' },
-  { label: 'Recuerdo 04', image: '', alt: 'Angie durante una sesión de fotos', className: 'gallery-card--wide' },
+  {
+    label: 'Angie en su infancia con vestido rosa',
+    image: '/images/gallery/angie-1.png',
+    alt: 'Angie de niña sonríe con un vestido fucsia de lunares, lazo rosa y zapatos a juego.',
+    className: 'gallery-card--featured',
+    width: 504,
+    height: 1024,
+  },
+  {
+    label: 'Angie de niña en un jardín',
+    image: '/images/gallery/angie-2.png',
+    alt: 'Angie de niña posa con un vestido rosa claro en un jardín iluminado, rodeada de plantas y libros.',
+    className: 'gallery-card--companion-top',
+    width: 1086,
+    height: 1448,
+  },
+  {
+    label: 'Angie con su vestido de quinceañera',
+    image: '/images/gallery/angie-3.png',
+    alt: 'Angie luce una tiara y un vestido rosa de quinceañera con bordados de encaje sobre un fondo rosa.',
+    className: 'gallery-card--companion-bottom',
+    width: 1087,
+    height: 1447,
+  },
 ];
