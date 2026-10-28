@@ -1,9 +1,18 @@
-<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 128 128">
-    <path d="M50.4 78.5a75.1 75.1 0 0 0-28.5 6.9l24.2-65.7c.7-2 1.9-3.2 3.4-3.2h29c1.5 0 2.7 1.2 3.4 3.2l24.2 65.7s-11.6-7-28.5-7L67 45.5c-.4-1.7-1.6-2.8-2.9-2.8-1.3 0-2.5 1.1-2.9 2.7L50.4 78.5Zm-1.1 28.2Zm-4.2-20.2c-2 6.6-.6 15.8 4.2 20.2a17.5 17.5 0 0 1 .2-.7 5.5 5.5 0 0 1 5.7-4.5c2.8.1 4.3 1.5 4.7 4.7.2 1.1.2 2.3.2 3.5v.4c0 2.7.7 5.2 2.2 7.4a13 13 0 0 0 5.7 4.9v-.3l-.2-.3c-1.8-5.6-.5-9.5 4.4-12.8l1.5-1a73 73 0 0 0 3.2-2.2 16 16 0 0 0 6.8-11.4c.3-2 .1-4-.6-6l-.8.6-1.6 1a37 37 0 0 1-22.4 2.7c-5-.7-9.7-2-13.2-6.2Z" />
-    <style>
-        path { fill: #000; }
-        @media (prefers-color-scheme: dark) {
-            path { fill: #FFF; }
-        }
-    </style>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="Serpiente esmeralda">
+  <defs>
+    <radialGradient id="bg" cx="38%" cy="30%" r="75%">
+      <stop offset="0" stop-color="#14553e" />
+      <stop offset="1" stop-color="#061b13" />
+    </radialGradient>
+    <linearGradient id="snake" x1="32" y1="18" x2="92" y2="108" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#eef0e8" />
+      <stop offset="0.5" stop-color="#49a078" />
+      <stop offset="1" stop-color="#c3ccd1" />
+    </linearGradient>
+  </defs>
+  <rect x="4" y="4" width="120" height="120" rx="28" fill="url(#bg)" stroke="#8faaa0" stroke-width="4" />
+  <path d="M87 28C70 17 42 22 43 42c1 18 37 13 39 36 2 22-27 35-50 18" fill="none" stroke="url(#snake)" stroke-linecap="round" stroke-width="12" />
+  <path d="M79 20c10-4 22 1 25 11l-12 12-15-10z" fill="#49a078" stroke="#c3ccd1" stroke-linejoin="round" stroke-width="4" />
+  <circle cx="94" cy="29" r="2.6" fill="#eef0e8" />
+  <path d="M103 33l10-2m-4 1 4 5m-4-5 3-6" fill="none" stroke="#c3ccd1" stroke-linecap="round" stroke-width="2.5" />
 </svg>

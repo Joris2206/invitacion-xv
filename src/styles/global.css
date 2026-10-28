@@ -201,7 +201,7 @@
 
 *, *::before, *::after { box-sizing: border-box; }
 
-.theme-picker { position: fixed; top: max(0.6rem, env(safe-area-inset-top)); right: max(0.6rem, env(safe-area-inset-right)); z-index: 20; max-width: calc(100vw - 1.2rem); }
+.theme-picker { display: none !important; position: fixed; top: max(0.6rem, env(safe-area-inset-top)); right: max(0.6rem, env(safe-area-inset-right)); z-index: 20; max-width: calc(100vw - 1.2rem); }
 .theme-picker[hidden], .theme-menu[hidden] { display: none; }
 .theme-toggle, .theme-menu button { min-height: 44px; color: var(--rose-700); font: inherit; font-size: 0.8rem; cursor: pointer; }
 .theme-toggle { padding: 0.55rem 0.85rem; border: 1px solid var(--rose-200); border-radius: 999px; background: var(--white); box-shadow: 0 3px 12px rgba(var(--primary-rgb), 0.12); }
