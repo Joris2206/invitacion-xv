@@ -1,14 +1,20 @@
 <div class="magic-page-pattern" aria-hidden="true">
   <img
     class="magic-page-pattern__layer magic-page-pattern__layer--primary"
-    src="/images/magic/magic-ornaments.png"
+    data-src="/images/magic/magic-ornaments.webp"
+    data-srcset="/images/magic/magic-ornaments-960.webp 960w, /images/magic/magic-ornaments.webp 1536w"
+    width="1536"
+    height="1024"
     alt=""
     decoding="async"
   />
 
   <img
     class="magic-page-pattern__layer magic-page-pattern__layer--secondary"
-    src="/images/magic/magic-ornaments.png"
+    data-src="/images/magic/magic-ornaments.webp"
+    data-srcset="/images/magic/magic-ornaments-960.webp 960w, /images/magic/magic-ornaments.webp 1536w"
+    width="1536"
+    height="1024"
     alt=""
     decoding="async"
   />
@@ -22,6 +28,8 @@
 
     const images = [...pattern.querySelectorAll('img')];
 
+    let hasStarted = false;
+
     const waitForImage = (image) => {
       if (image.complete && image.naturalWidth > 0) {
         return image.decode?.().catch(() => undefined) ?? Promise.resolve();
@@ -33,9 +41,36 @@
       });
     };
 
-    Promise.all(images.map(waitForImage)).then(() => {
-      pattern.classList.add('is-ready');
-    });
+    const loadPattern = () => {
+      if (hasStarted) return;
+      hasStarted = true;
+
+      images.forEach((image) => {
+        image.srcset = image.dataset.srcset;
+        image.sizes = '(max-width: 700px) 128vw, 88vw';
+        image.src = image.dataset.src;
+      });
+
+      Promise.all(images.map(waitForImage)).then(() => {
+        pattern.classList.add('is-ready');
+      });
+    };
+
+    const loadWhenIdle = () => {
+      if (document.documentElement.dataset.theme !== 'slytherin-magico') return;
+      if ('requestIdleCallback' in window) {
+        window.requestIdleCallback(loadPattern, { timeout: 1500 });
+      } else {
+        window.setTimeout(loadPattern, 300);
+      }
+    };
+
+    if (document.readyState === 'complete') loadWhenIdle();
+    else window.addEventListener('load', loadWhenIdle, { once: true });
+
+    new MutationObserver(() => {
+      if (document.documentElement.dataset.theme === 'slytherin-magico') loadPattern();
+    }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
   })();
 </script>
 

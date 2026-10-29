@@ -5,6 +5,8 @@ import { Image } from 'astro:assets';
 interface GalleryItem {
   label: string;
   image: string;
+  srcset: string;
+  sizes: string;
   alt: string;
   className?: string;
   width: number;
@@ -34,12 +36,15 @@ const { items } = Astro.props;
             type="button"
             aria-label={`Ampliar: ${item.label}`}
             data-gallery-index={index}
+            data-full-src={item.image}
           >
             <Image
               src={item.image}
               alt={item.alt}
               width={item.width}
               height={item.height}
+              srcset={item.srcset}
+              sizes={item.sizes}
               loading="lazy"
               decoding="async"
             />
@@ -78,7 +83,7 @@ const { items } = Astro.props;
     activeIndex = (index + triggers.length) % triggers.length;
     const sourceImage = triggers[activeIndex].querySelector('img');
     if (!sourceImage) return;
-    lightboxImage.src = sourceImage.currentSrc || sourceImage.src;
+    lightboxImage.src = triggers[activeIndex].dataset.fullSrc || sourceImage.currentSrc || sourceImage.src;
     lightboxImage.alt = sourceImage.alt;
     lightboxImage.width = sourceImage.naturalWidth || sourceImage.width;
     lightboxImage.height = sourceImage.naturalHeight || sourceImage.height;
@@ -91,6 +96,22 @@ const { items } = Astro.props;
       dialog.showModal();
     });
   });
+
+  if ('IntersectionObserver' in window) {
+    const nearbyObserver = new IntersectionObserver(
+      (entries, observer) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          const image = entry.target.querySelector<HTMLImageElement>('img');
+          if (image) image.loading = 'eager';
+          observer.unobserve(entry.target);
+        });
+      },
+      { rootMargin: '600px 0px' },
+    );
+
+    triggers.forEach((trigger) => nearbyObserver.observe(trigger));
+  }
 
   closeButton?.addEventListener('click', () => dialog?.close());
   previousButton?.addEventListener('click', () => showImage(activeIndex - 1));

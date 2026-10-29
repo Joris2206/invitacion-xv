@@ -18,10 +18,12 @@ const particles = Array.from({ length: 26 }, (_, index) => ({
   <div class="intro-scene" aria-hidden="true">
     <img
       class="intro-forest"
-      src="/images/magic/forest-night.png"
+      src="/images/magic/forest-night.webp"
+      srcset="/images/magic/forest-night-960.webp 960w, /images/magic/forest-night.webp 1672w"
+      sizes="(orientation: portrait) 1672px, 100vw"
       alt=""
       width="1672"
-      height="940"
+      height="941"
       loading="eager"
       fetchpriority="high"
       decoding="async"
@@ -39,10 +41,12 @@ const particles = Array.from({ length: 26 }, (_, index) => ({
 
     <div class="intro-doe">
       <img
-        src="/images/magic/silver-doe.png"
+        src="/images/magic/silver-doe.webp"
+        srcset="/images/magic/silver-doe-384.webp 384w, /images/magic/silver-doe-768.webp 768w, /images/magic/silver-doe.webp 1140w"
+        sizes="(max-width: 700px) 48vw, 290px"
         alt=""
-        width="1152"
-        height="1376"
+        width="1140"
+        height="1380"
         loading="eager"
         fetchpriority="high"
         decoding="async"
@@ -76,10 +80,10 @@ const particles = Array.from({ length: 26 }, (_, index) => ({
       '(prefers-reduced-motion: reduce)',
     );
     const storageKey = 'invitacion-xv-magic-intro-seen';
-    const assetPaths = [
-      '/images/magic/forest-night.png',
-      '/images/magic/silver-doe.png',
-    ];
+    const assets = [
+      dialog?.querySelector('.intro-forest'),
+      dialog?.querySelector('.intro-doe img'),
+    ].filter(Boolean);
 
     let isRunning = false;
     let isPreparing = false;
@@ -93,10 +97,12 @@ const particles = Array.from({ length: 26 }, (_, index) => ({
     const isSlytherinActive = () =>
       document.documentElement.dataset.theme === 'slytherin-magico';
 
-    const preloadAsset = (src) =>
+    const waitForAsset = (image) =>
       new Promise((resolve) => {
-        const image = new Image();
-        image.decoding = 'async';
+        if (image.complete && image.naturalWidth > 0) {
+          image.decode?.().then(() => resolve(true)).catch(() => resolve(true));
+          return;
+        }
 
         image.onload = async () => {
           try {
@@ -109,11 +115,10 @@ const particles = Array.from({ length: 26 }, (_, index) => ({
         };
 
         image.onerror = () => resolve(false);
-        image.src = src;
       });
 
     // Comienza a descargar los recursos desde que carga la página.
-    const assetsReady = Promise.all(assetPaths.map(preloadAsset)).then(
+    const assetsReady = Promise.all(assets.map(waitForAsset)).then(
       (results) => results.every(Boolean),
     );
 

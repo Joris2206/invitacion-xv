@@ -21,26 +21,35 @@ export const invitation = {
 export const galleryItems = [
   {
     label: 'Angie en su infancia con vestido rosa',
-    image: '/images/gallery/angie-1.png',
+    image: '/images/gallery/angie-1.webp',
+    srcset:
+      '/images/gallery/angie-1-480.webp 480w, /images/gallery/angie-1-768.webp 768w, /images/gallery/angie-1.webp 1087w',
+    sizes: '(max-width: 671px) 68vw, 620px',
     alt: 'Angie de niña sonríe con un vestido fucsia de lunares, lazo rosa y zapatos a juego.',
     className: 'gallery-card--featured',
+    width: 1087,
+    height: 1447,
+  },
+  {
+    label: 'Angie de niña en un jardín',
+    image: '/images/gallery/angie-2.webp',
+    srcset:
+      '/images/gallery/angie-2-360.webp 360w, /images/gallery/angie-2.webp 504w',
+    sizes: '(max-width: 671px) 60vw, 380px',
+    alt: 'Angie de niña posa con un vestido rosa claro en un jardín iluminado, rodeada de plantas y libros.',
+    className: 'gallery-card--companion-top',
     width: 504,
     height: 1024,
   },
   {
-    label: 'Angie de niña en un jardín',
-    image: '/images/gallery/angie-2.png',
-    alt: 'Angie de niña posa con un vestido rosa claro en un jardín iluminado, rodeada de plantas y libros.',
-    className: 'gallery-card--companion-top',
-    width: 1086,
-    height: 1448,
-  },
-  {
     label: 'Angie con su vestido de quinceañera',
-    image: '/images/gallery/angie-3.png',
+    image: '/images/gallery/angie-3.webp',
+    srcset:
+      '/images/gallery/angie-3-480.webp 480w, /images/gallery/angie-3-768.webp 768w, /images/gallery/angie-3.webp 1086w',
+    sizes: '(max-width: 671px) 66vw, 430px',
     alt: 'Angie luce una tiara y un vestido rosa de quinceañera con bordados de encaje sobre un fondo rosa.',
     className: 'gallery-card--companion-bottom',
-    width: 1087,
-    height: 1447,
+    width: 1086,
+    height: 1448,
   },
 ];
