@@ -5,6 +5,11 @@ interface Props {
 }
 
 const { name, date } = Astro.props;
+const nameWords = name.trim().split(/\s+/);
+const nameBreak = Math.ceil(nameWords.length / 2);
+const nameLines = nameWords.length > 2
+  ? [nameWords.slice(0, nameBreak).join(' '), nameWords.slice(nameBreak).join(' ')]
+  : [name];
 ---
 
 <section class="hero" aria-labelledby="hero-title">
@@ -27,7 +32,11 @@ const { name, date } = Astro.props;
   <div class="hero-content">
     <p class="hero-kicker">Mis quince años</p>
     <p class="hero-intro">Con mucha ilusión, quiero compartir contigo este día inolvidable</p>
-    <h1 id="hero-title">{name}</h1>
+    <h1 id="hero-title">
+      {nameLines.map((line, index) => (
+        <><span class="hero-name-line">{line}</span>{index < nameLines.length - 1 && ' '}</>
+      ))}
+    </h1>
     <div class="hero-divider" aria-hidden="true"><span>XV</span></div>
     <!-- <p class="hero-date">{date}</p> -->
     <a class="button button--primary" href="#invitacion">Ver invitación</a>

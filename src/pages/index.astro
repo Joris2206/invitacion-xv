@@ -27,11 +27,7 @@ import { galleryItems, invitation } from '../data/invitation';
       />
       <DressCode dressCode={invitation.dressCode} note={invitation.dressCodeNote} />
       <Gallery items={galleryItems} />
-      <!-- <Gifts
-        note={invitation.giftNote}
-        bankDetails={invitation.bankDetails}
-        qrImage={invitation.qrImage}
-      /> -->
+      <Gifts />
       <Rsvp name={invitation.shortName} rsvpUrl={invitation.rsvpUrl} />
     </div>
   </main>
